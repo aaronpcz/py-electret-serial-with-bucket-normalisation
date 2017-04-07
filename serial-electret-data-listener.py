@@ -38,11 +38,21 @@ class PublishMediaFrameworkMessages:
         self.receive_events_thread.daemon = True
         self.receive_events_thread.start()
 
+        yes = False
+
+        while True:
+            reading = serial_port.readline()
+            electret_peak_sample = reading
+            handle_data(electret_peak_sample)
+            self.publish(yes)
+            yes = True
+
     def _receive_events_thread(self):
         self.socketio.wait()
 
     def publish(self, should_publish):
         print("publish")
+        print(should_publish)
         if not should_publish:
             self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score)
 
@@ -70,22 +80,21 @@ def handle_data(data):
 def read_from_port(ser):
     # read serial port for data
 
-    ws_messenger = PublishMediaFrameworkMessages()
-
-    should_publish = False
+    # ws_messenger = PublishMediaFrameworkMessages()
 
     while True:
         reading = ser.readline()
         electret_peak_sample = reading
         handle_data(electret_peak_sample)
-        ws_messenger.publish(should_publish)
-        should_publish = True
+        # ws_messenger.publish(should_publish)
 
 
 def main():
-    thread = threading.Thread(target=read_from_port, args=(serial_port,))
+    # thread = threading.Thread(target=read_from_port, args=(serial_port,))
     # thread.daemon = True
-    thread.start()
+    # thread.start()
+
+    ws_messenger = PublishMediaFrameworkMessages()
 
 if __name__ == "__main__":
     main()
