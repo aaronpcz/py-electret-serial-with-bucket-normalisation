@@ -25,7 +25,6 @@ score = {
         }
     }
 
-should_publish = False
 
 class PublishMediaFrameworkMessages:
     def on_auth_r(self, *args):
@@ -42,7 +41,7 @@ class PublishMediaFrameworkMessages:
     def _receive_events_thread(self):
         self.socketio.wait()
 
-    def publish(self):
+    def publish(self, should_publish):
         if not should_publish:
             self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score)
 
@@ -72,11 +71,14 @@ def read_from_port(ser):
 
     ws_messenger = PublishMediaFrameworkMessages()
 
+    should_publish = False
+
     while True:
         reading = ser.readline()
         electret_peak_sample = reading
         handle_data(electret_peak_sample)
-        ws_messenger.publish()
+        ws_messenger.publish(should_publish)
+        should_publish = True
 
 
 def main():
