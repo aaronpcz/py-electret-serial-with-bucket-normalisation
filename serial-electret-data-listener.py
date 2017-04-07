@@ -26,7 +26,7 @@ def read_from_port(ser):
     # read serial port for data
     while True:
         reading = ser.readline()
-        electret_peak_sample = int(reading)
+        electret_peak_sample = reading
         handle_data(electret_peak_sample)
 
 
