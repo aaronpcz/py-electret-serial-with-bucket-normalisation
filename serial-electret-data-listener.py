@@ -81,7 +81,7 @@ def read_from_port(ser):
 
 def main():
     thread = threading.Thread(target=read_from_port, args=(serial_port,))
-    thread.daemon = True
+    # thread.daemon = True
     thread.start()
 
 if __name__ == "__main__":
