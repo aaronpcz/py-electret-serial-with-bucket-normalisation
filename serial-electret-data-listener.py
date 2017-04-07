@@ -3,6 +3,15 @@ import time
 import threading
 from socketIO_client import SocketIO, LoggingNamespace, BaseNamespace
 from threading import Thread
+from tendo import singleton
+import configparser
+
+me = singleton.SingleInstance()
+
+config = configparser.ConfigParser()
+config.read('./config.cfg')
+
+password = config.get('variables', 'password')
 
 media_hub_url = 'http://dev-uos-mediahub.azurewebsites.net'
 
@@ -16,6 +25,7 @@ score = {
         }
     }
 
+should_publish = False
 
 class PublishMediaFrameworkMessages:
     def on_auth_r(self, *args):
@@ -23,7 +33,7 @@ class PublishMediaFrameworkMessages:
 
     def __init__(self):
         self.socketio = SocketIO(media_hub_url, 80, LoggingNamespace)
-        self.socketio.emit('auth', {'password': 'kittens'}, self.on_auth_r)
+        self.socketio.emit('auth', {'password': password}, self.on_auth_r)
 
         self.receive_events_thread = Thread(target=self._receive_events_thread)
         self.receive_events_thread.daemon = True
@@ -33,8 +43,8 @@ class PublishMediaFrameworkMessages:
         self.socketio.wait()
 
     def publish(self):
-        print('publish')
-        # self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score)
+        if not should_publish:
+            self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score)
 
 
 # serial connection
