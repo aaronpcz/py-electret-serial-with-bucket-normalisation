@@ -1,6 +1,41 @@
 import serial
 import time
 import threading
+from socketIO_client import SocketIO, LoggingNamespace, BaseNamespace
+from threading import Thread
+
+media_hub_url = 'http://dev-uos-mediahub.azurewebsites.net'
+
+score = {
+        "play": {
+            "themes": [
+            ],
+            "scenes": [
+                "586f853ab8678acc10b1595d"
+            ]
+        }
+    }
+
+
+class PublishMediaFrameworkMessages:
+    def on_auth_r(self, *args):
+        print('on_auth_r', args)
+
+    def __init__(self):
+        self.socketio = SocketIO(media_hub_url, 80, LoggingNamespace)
+        self.socketio.emit('auth', {'password': 'kittens'}, self.on_auth_r)
+
+        self.receive_events_thread = Thread(target=self._receive_events_thread)
+        self.receive_events_thread.daemon = True
+        self.receive_events_thread.start()
+
+    def _receive_events_thread(self):
+        self.socketio.wait()
+
+    def publish(self):
+        print('publish')
+        # self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score)
+
 
 # serial connection
 port = '/dev/ttyACM0'
@@ -24,11 +59,19 @@ def handle_data(data):
 
 def read_from_port(ser):
     # read serial port for data
+
+    ws_messenger = PublishMediaFrameworkMessages()
+
     while True:
         reading = ser.readline()
         electret_peak_sample = reading
         handle_data(electret_peak_sample)
+        ws_messenger.publish()
 
 
-thread = threading.Thread(target=read_from_port, args=(serial_port,))
-thread.start()
+def main():
+    thread = threading.Thread(target=read_from_port, args=(serial_port,))
+    thread.start()
+
+if __name__ == "__main__":
+    main()
