@@ -42,6 +42,7 @@ class PublishMediaFrameworkMessages:
         self.socketio.wait()
 
     def publish(self, should_publish):
+        print("publish")
         if not should_publish:
             self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score)
 
