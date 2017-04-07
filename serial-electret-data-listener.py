@@ -5,6 +5,7 @@ from socketIO_client import SocketIO, LoggingNamespace, BaseNamespace
 from threading import Thread
 from tendo import singleton
 import configparser
+import sys
 
 me = singleton.SingleInstance()
 
@@ -56,6 +57,8 @@ class PublishMediaFrameworkMessages:
         print(should_publish)
         if not should_publish:
             self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score)
+        if should_publish:
+            sys.exit('we have published')
 
 
 # serial connection
@@ -78,23 +81,7 @@ def handle_data(data):
         print("Error")
 
 
-def read_from_port(ser):
-    # read serial port for data
-
-    # ws_messenger = PublishMediaFrameworkMessages()
-
-    while True:
-        reading = ser.readline()
-        electret_peak_sample = reading
-        handle_data(electret_peak_sample)
-        # ws_messenger.publish(should_publish)
-
-
 def main():
-    # thread = threading.Thread(target=read_from_port, args=(serial_port,))
-    # thread.daemon = True
-    # thread.start()
-
     ws_messenger = PublishMediaFrameworkMessages()
 
 if __name__ == "__main__":
