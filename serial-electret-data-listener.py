@@ -33,6 +33,7 @@ class PublishMediaFrameworkMessages:
     def __init__(self):
         self.socketio = SocketIO(media_hub_url, 80, LoggingNamespace)
         self.socketio.emit('auth', {'password': password}, self.on_auth_r)
+        self.socketio.wait_for_callbacks(seconds=10)
 
         self.receive_events_thread = Thread(target=self._receive_events_thread)
         self.receive_events_thread.daemon = True
