@@ -70,7 +70,9 @@ class PublishMediaFrameworkMessages:
         self.socketio.wait()
 
     def publish(self, score_to_play):
-        self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score_to_play)
+        if score_to_play:
+            print("publish score")
+            self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score_to_play)
 
 
 # serial connection
@@ -83,8 +85,11 @@ def handle_data(data):
     try:
         print(data)
         electret_peak_sample = int(data)
-        if electret_peak_sample < 50:
+        if electret_peak_sample < 100:
             print("very quiet")
+            return
+        elif electret_peak_sample < 200:
+            print("quiet")
             return get_score_for_scene(green_scene)
         elif electret_peak_sample < 500:
             print("medium noise")
@@ -94,7 +99,7 @@ def handle_data(data):
             return get_score_for_scene(red_scene)
     except:
         print("Error")
-        return get_score_for_scene("")
+        return
 
 
 def main():
