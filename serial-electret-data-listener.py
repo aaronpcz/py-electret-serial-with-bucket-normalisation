@@ -26,6 +26,22 @@ score = {
         }
     }
 
+green_scene = "58eb7eba2261fd6c10a8c65a"
+yellow_scene = "58eb7ec62261fd6c10a8c65b"
+red_scene = "58eb7ece2261fd6c10a8c65c"
+
+
+def get_score_for_scene(scene_id):
+    return {
+        "play": {
+            "themes": [
+            ],
+            "scenes": [
+                scene_id
+            ]
+        }
+    }
+
 
 class PublishMediaFrameworkMessages:
     def on_auth_r(self, *args):
@@ -40,25 +56,21 @@ class PublishMediaFrameworkMessages:
         self.receive_events_thread.daemon = True
         self.receive_events_thread.start()
 
-        yes = False
+        self.published_score = get_score_for_scene("")
 
         while True:
             reading = serial_port.readline()
             electret_peak_sample = reading
-            handle_data(electret_peak_sample)
-            self.publish(yes)
-            yes = True
+            score_to_play = handle_data(electret_peak_sample)
+            if not self.published_score == score_to_play:
+                self.publish(score_to_play)
+                self.published_score = score_to_play
 
     def _receive_events_thread(self):
         self.socketio.wait()
 
-    def publish(self, should_publish):
-        print("publish")
-        print(should_publish)
-        if not should_publish:
-            self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score)
-        if should_publish:
-            sys.exit('we have published')
+    def publish(self, score_to_play):
+        self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score_to_play)
 
 
 # serial connection
@@ -73,12 +85,16 @@ def handle_data(data):
         electret_peak_sample = int(data)
         if electret_peak_sample < 50:
             print("very quiet")
+            return get_score_for_scene(green_scene)
         elif electret_peak_sample < 500:
             print("medium noise")
+            return get_score_for_scene(yellow_scene)
         else:
             print("noisy")
+            return get_score_for_scene(red_scene)
     except:
         print("Error")
+        return get_score_for_scene("")
 
 
 def main():
