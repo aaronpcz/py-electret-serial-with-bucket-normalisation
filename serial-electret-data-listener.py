@@ -72,6 +72,8 @@ class PublishMediaFrameworkMessages:
         self.receive_events_thread.daemon = True
         self.receive_events_thread.start()
 
+        self.published_data = handle_data_for_osc("0")
+
         while True:
             reading = serial_port.readline()
             electret_peak_sample = reading
