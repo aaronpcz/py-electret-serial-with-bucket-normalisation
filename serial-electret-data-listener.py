@@ -30,6 +30,15 @@ green_scene = "58eb7eba2261fd6c10a8c65a"
 yellow_scene = "58eb7ec62261fd6c10a8c65b"
 red_scene = "58eb7ece2261fd6c10a8c65c"
 
+osc_value_quiet = 33
+osc_value_med = 66
+osc_value_loud = 100
+
+osc_chan_quiet = ""
+osc_chan_med = ""
+osc_chan_loud = ""
+
+osc_chan_default = "/eos/chan/402"
 
 def get_score_for_scene(scene_id):
     return {
@@ -40,6 +49,13 @@ def get_score_for_scene(scene_id):
                 scene_id
             ]
         }
+    }
+
+
+def get_osc_command(target, value):
+    return {
+        "target": target,
+        "value": value
     }
 
 
@@ -56,15 +72,13 @@ class PublishMediaFrameworkMessages:
         self.receive_events_thread.daemon = True
         self.receive_events_thread.start()
 
-        self.published_score = get_score_for_scene("")
-
         while True:
             reading = serial_port.readline()
             electret_peak_sample = reading
-            score_to_play = handle_data(electret_peak_sample)
-            if not self.published_score == score_to_play:
-                self.publish(score_to_play)
-                self.published_score = score_to_play
+            publish_data = handle_data_for_osc(electret_peak_sample)
+            if not self.published_data == publish_data:
+                self.publish_osc(publish_data)
+                self.published_data = publish_data
 
     def _receive_events_thread(self):
         self.socketio.wait()
@@ -74,11 +88,37 @@ class PublishMediaFrameworkMessages:
             print("publish score")
             self.socketio.emit('sendCommand', 'electret', 'showScenesAndThemes', score_to_play)
 
+    def publish_osc(self, osc):
+        if osc:
+            print("publish oscCommand")
+            self.socketio.emit('sendCommand', 'lighting', 'oscCommand', osc)
+
 
 # serial connection
 port = '/dev/ttyACM0'
 baud = 9600
 serial_port = serial.Serial(port, baud)
+
+
+def handle_data_for_osc(data):
+    try:
+        print(data)
+        electret_peak_sample = int(data)
+        if electret_peak_sample < 100:
+            print("very quiet")
+            return
+        elif electret_peak_sample < 200:
+            print("quiet")
+            return get_osc_command(osc_chan_default, osc_value_quiet)
+        elif electret_peak_sample < 500:
+            print("medium noise")
+            return get_osc_command(osc_chan_default, osc_value_med)
+        else:
+            print("noisy")
+            return get_osc_command(osc_chan_default, osc_value_loud)
+    except:
+        print("Error")
+        return
 
 
 def handle_data(data):
