@@ -125,25 +125,25 @@ def handle_data_for_osc(data, channel):
         return
 
 
-def handle_data_for_osc(data):
-    try:
-        print(data)
-        electret_peak_sample = int(data)
-        if electret_peak_sample < 100:
-            print("very quiet")
-            return
-        elif electret_peak_sample < 200:
-            print("quiet")
-            return get_osc_command(osc_chan_default, osc_value_quiet)
-        elif electret_peak_sample < 500:
-            print("medium noise")
-            return get_osc_command(osc_chan_default, osc_value_med)
-        else:
-            print("noisy")
-            return get_osc_command(osc_chan_default, osc_value_loud)
-    except:
-        print("Error")
-        return
+# def handle_data_for_osc(data):
+#     try:
+#         print(data)
+#         electret_peak_sample = int(data)
+#         if electret_peak_sample < 100:
+#             print("very quiet")
+#             return
+#         elif electret_peak_sample < 200:
+#             print("quiet")
+#             return get_osc_command(osc_chan_default, osc_value_quiet)
+#         elif electret_peak_sample < 500:
+#             print("medium noise")
+#             return get_osc_command(osc_chan_default, osc_value_med)
+#         else:
+#             print("noisy")
+#             return get_osc_command(osc_chan_default, osc_value_loud)
+#     except:
+#         print("Error")
+#         return
 
 
 def handle_data(data):
