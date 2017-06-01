@@ -34,9 +34,9 @@ osc_value_quiet = 33
 osc_value_med = 66
 osc_value_loud = 100
 
-osc_chan_quiet = ""
-osc_chan_med = ""
-osc_chan_loud = ""
+osc_chan_401 = "/eos/chan/401"
+osc_chan_402 = "/eos/chan/402"
+osc_chan_403 = "/eos/chan/403"
 
 osc_chan_default = "/eos/chan/402"
 
@@ -72,14 +72,16 @@ class PublishMediaFrameworkMessages:
         self.receive_events_thread.daemon = True
         self.receive_events_thread.start()
 
-        self.published_data = handle_data_for_osc("0")
+        self.published_data = handle_data_for_osc("0", osc_chan_default)
 
         while True:
             reading = serial_port.readline()
             electret_peak_sample = reading
-            publish_data = handle_data_for_osc(electret_peak_sample)
+            publish_data = handle_data_for_osc(electret_peak_sample, osc_chan_default)
             if not self.published_data == publish_data:
-                self.publish_osc(publish_data)
+                self.publish_osc(handle_data_for_osc(electret_peak_sample, osc_chan_401))
+                self.publish_osc(handle_data_for_osc(electret_peak_sample, osc_chan_402))
+                self.publish_osc(handle_data_for_osc(electret_peak_sample, osc_chan_403))
                 self.published_data = publish_data
 
     def _receive_events_thread(self):
@@ -100,6 +102,27 @@ class PublishMediaFrameworkMessages:
 port = '/dev/ttyACM0'
 baud = 9600
 serial_port = serial.Serial(port, baud)
+
+
+def handle_data_for_osc(data, channel):
+    try:
+        print(data)
+        electret_peak_sample = int(data)
+        if electret_peak_sample < 100:
+            print("very quiet")
+            return
+        elif electret_peak_sample < 200:
+            print("quiet")
+            return get_osc_command(channel, osc_value_quiet)
+        elif electret_peak_sample < 500:
+            print("medium noise")
+            return get_osc_command(channel, osc_value_med)
+        else:
+            print("noisy")
+            return get_osc_command(channel, osc_value_loud)
+    except:
+        print("Error")
+        return
 
 
 def handle_data_for_osc(data):
