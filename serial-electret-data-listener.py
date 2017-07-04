@@ -13,7 +13,7 @@ class UDPClient:
     def __init__(self):
         # self.HOST, self.PORT = "127.0.0.1", 9999
         # self.HOST, self.PORT = "192.168.0.42", 9999
-        self.HOST, self.PORT = "10.100.168.28", 9999
+        self.HOST, self.PORT = "10.100.164.28", 9999
 
         # APEP SOCK_DGRAM is the socket type to use for UDP sockets
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
