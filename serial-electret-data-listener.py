@@ -49,15 +49,15 @@ def handle_data(data):
         electret_peak_sample = int(data)
         if electret_peak_sample < 50:
             print("very quiet")
-            udp_client.send_string_data("/etc/chan/17", 15)
+            udp_client.send_numerical_data("/etc/chan/17", 15)
         elif electret_peak_sample < 500:
             print("medium noise")
-            udp_client.send_string_data("/etc/chan/17", 50)
+            udp_client.send_numerical_data("/etc/chan/17", 50)
         else:
             print("noisy")
-            udp_client.send_string_data("/etc/chan/17", 100)
-    except:
-        print("Error")
+            udp_client.send_numerical_data("/etc/chan/17", 100)
+    except Exception as e:
+        print("Error: " + str(e))
 
 
 def read_from_port(ser):
