@@ -69,7 +69,5 @@ def read_from_port(ser):
 
 
 if __name__ == "__main__":
-
-
     thread = threading.Thread(target=read_from_port, args=(serial_port,))
     thread.start()
