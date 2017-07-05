@@ -52,7 +52,7 @@ mic_range_min = 40
 mic_range_max = 1000
 
 def rescale(i_value):
-    return ((max_allowed - min_allowed) * (i_value * mic_range_min) / (mic_range_max - mic_range_min)) + min_allowed
+    return ((i_value - mic_range_min) / (mic_range_max - mic_range_min)) * (max_allowed - min_allowed) + min_allowed
 
 
 def handle_data_for_continuous_control(data):
