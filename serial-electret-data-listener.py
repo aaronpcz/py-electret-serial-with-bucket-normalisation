@@ -45,14 +45,14 @@ class UDPClient:
 
 udp_client = UDPClient()
 
-min_allowed = 0
+min_allowed = 1
 max_allowed = 100
 
 mic_range_min = 0
 mic_range_max = 1000
 
 def rescale(i_value):
-    return ((i_value - mic_range_min) / (mic_range_max - mic_range_min)) * (max_allowed - min_allowed) + min_allowed
+    return int(((i_value - mic_range_min) / (mic_range_max - mic_range_min)) * (max_allowed - min_allowed) + min_allowed)
 
 
 def handle_data_for_continuous_control(data):
