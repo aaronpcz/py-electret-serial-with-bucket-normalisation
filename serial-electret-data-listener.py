@@ -48,7 +48,7 @@ udp_client = UDPClient()
 min_allowed = 0
 max_allowed = 100
 
-mic_range_min = 40
+mic_range_min = 0
 mic_range_max = 1000
 
 def rescale(i_value):
