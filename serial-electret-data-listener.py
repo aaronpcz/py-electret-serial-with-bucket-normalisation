@@ -24,7 +24,7 @@ class UDPClient:
     def send_osc_command(self, command):
         self.sock.sendto(command.SerializeToString(), (self.HOST, self.PORT))
         print(time.time())
-        print("Sent:     {} {}".format(command, len(command.SerializeToString())))
+        # print("Sent:     {} {}".format(command, len(command.SerializeToString())))
 
     def send_numerical_data(self, target, int_value):
         command = osc_command_pb2.OSCCommand()
@@ -51,16 +51,16 @@ max_allowed = 100
 mic_range_min = 40
 mic_range_max = 1000
 
-
 def rescale(i_value):
-    return ((max_allowed - min_allowed) * (i_value * mic_range_min) / (mic_range_max - mic_range_min)) + min_allowed;
+    return ((max_allowed - min_allowed) * (i_value * mic_range_min) / (mic_range_max - mic_range_min)) + min_allowed
 
 
 def handle_data_for_continuous_control(data):
     try:
         electret_peak_sample = int(data)
-        rescaleed_peak_sample = rescale(electret_peak_sample)
-        udp_client.send_numerical_data(osc_string_target, rescaleed_peak_sample)
+        print(electret_peak_sample)
+        rescaled_peak_sample = rescale(electret_peak_sample)
+        udp_client.send_numerical_data(osc_string_target, rescaled_peak_sample)
     except Exception as e:
         print("Error: " + str(e))
 
