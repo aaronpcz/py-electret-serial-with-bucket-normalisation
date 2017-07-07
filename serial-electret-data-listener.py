@@ -174,7 +174,7 @@ class FullLightsOnAndWaitState(State):
 class StateMachineManager:
 
     def __init__(self, udp):
-        self.first_state = DirectAcousticLightControlState("one", self, 95)
+        self.first_state = DirectAcousticLightControlState("one", self, 50)
         self.second_state = FullLightsOnAndWaitState("two", self, 40)
         self.udp = udp
 
@@ -225,11 +225,11 @@ class UDPClient:
 udp_client = UDPClient()
 state = StateMachineManager(udp_client)
 
-min_allowed = 1
-max_allowed = 100
+min_allowed = 1.0
+max_allowed = 100.0
 
-mic_range_min = 0
-mic_range_max = 1000
+mic_range_min = 0.0
+mic_range_max = 1000.0
 
 
 def rescale(i_value):
